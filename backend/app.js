@@ -1,14 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
+require('dotenv').config({ path: '.env.local' });
 const bodyParser = require('body-parser');
 
 const bookRoutes = require("./routes/book.js");
 
 const app = express();
 
-mongoose.connect('mongodb+srv://TestAccount1:TestPassword1@cluster0.dcejh5o.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
-  { useNewUrlParser: true,
-    useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connexion à MongoDB Atlas réussie !'))
   .catch(() => console.log('Connexion à MongoDB Atlas échouée !'));
 
@@ -24,8 +23,5 @@ app.use((req, res, next) => {
 app.use(bodyParser.json());
 
 app.use('/api/books', bookRoutes);
-
-
-
 
 module.exports = app;
