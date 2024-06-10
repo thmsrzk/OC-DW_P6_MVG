@@ -14,7 +14,15 @@
 
 ## Setup guide
 ### Backend 
-Go to backend folder and run in the console : 
+
+Go to backend folder and create a ".env" file containing those lines : 
+`
+NODE_ENV= either "production" (for ATLAS) or "development" (for local)
+MONGODB_ATLAS_URI= Your MongoDB Atlas DB URI
+MONGODB_LOCAL_URI= Your local MongoDB URI
+`
+<br>
+Then run in the console : 
 <br>
 `npm install` to install dependencies
 <br>
