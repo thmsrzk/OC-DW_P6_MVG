@@ -4,7 +4,7 @@ const fs = require("fs");
 exports.getAllBooks = (req, res, next) => {
     Book.find()
         .then((books) => res.status(200).json(books))
-        .catch((error) => res.status(400).json({ error }));
+        .catch((error) => res.status(500).json(error));
 };
 
 exports.getTopRatedBooks = (req, res, next) => {
@@ -12,7 +12,7 @@ exports.getTopRatedBooks = (req, res, next) => {
         .sort({ averageRating: -1 })
         .limit(3)
         .then((books) => res.status(200).json(books))
-        .catch((error) => res.status(400).json({ error }));
+        .catch((error) => res.status(500).json(error));
 };
 
 exports.createBook = (req, res, next) => {
@@ -30,7 +30,7 @@ exports.createBook = (req, res, next) => {
             res.status(201).json({ message: "Le livre a bien été ajouté !" });
         })
         .catch((error) => {
-            res.status(400).json({ error });
+            res.status(400).json(error);
         });
 };
 
@@ -54,14 +54,14 @@ exports.rateBook = (req, res, next) => {
             res.status(200).json(book)
         })
         .catch(error => {
-            res.status(400).json({ error })
+            res.status(400).json(error)
         });
 };
 
 exports.getOneBook = (req, res, next) => {
     Book.findOne({ _id: req.params.id })
         .then((book) => res.status(200).json(book))
-        .catch((error) => res.status(404).json({ error }));
+        .catch((error) => res.status(404).json(error));
 };
 
 exports.modifyBook = (req, res, next) => {
@@ -77,7 +77,7 @@ exports.modifyBook = (req, res, next) => {
     Book.findOne({ _id: req.params.id })
         .then((book) => {
             if (book.userId != req.auth.userId) {
-                res.status(401).json({ message: "Not authorized" });
+                res.status(403).json(error);
             } else {
                 if (req.file) {
                     const filename = book.imageUrl.split('/images/')[1];
@@ -87,7 +87,7 @@ exports.modifyBook = (req, res, next) => {
                             { ...bookObject, _id: req.params.id }
                         )
                             .then(() => res.status(200).json({ message: "Le livre a bien été modifié !" }))
-                            .catch((error) => res.status(401).json({ error }));
+                            .catch((error) => res.status(500).json(error));
                     });
                 } else {
                     Book.updateOne(
@@ -95,12 +95,12 @@ exports.modifyBook = (req, res, next) => {
                         { ...bookObject, _id: req.params.id }
                     )
                         .then(() => res.status(200).json({ message: "Le livre a bien été modifié !" }))
-                        .catch((error) => res.status(401).json({ error }));
+                        .catch((error) => res.status(500).json(error));
                 }
             }
         })
         .catch((error) => {
-            res.status(400).json({ error });
+            res.status(400).json(error);
         });
 };
 
@@ -108,21 +108,19 @@ exports.deleteBook = (req, res, next) => {
     Book.findOne({ _id: req.params.id })
         .then((book) => {
             if (book.userId != req.auth.userId) {
-                res.status(401).json({ message: "Not authorized" });
+                res.status(403).json(error);
             } else {
                 const filename = book.imageUrl.split("/images/")[1];
                 fs.unlink(`images/${filename}`, () => {
                     Book.deleteOne({ _id: req.params.id })
                         .then(() => {
-                            res
-                                .status(200)
-                                .json({ message: "Le livre a bien été supprimé !" });
+                            res.status(200).json({ message: "Le livre a bien été supprimé !" });
                         })
-                        .catch((error) => res.status(401).json({ error }));
+                        .catch((error) => res.status(401).json(error));
                 });
             }
         })
         .catch((error) => {
-            res.status(500).json({ error });
+            res.status(500).json(error);
         });
 };
