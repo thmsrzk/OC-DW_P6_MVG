@@ -1,24 +1,16 @@
-require('dotenv').config();
-require('dotenv').config({ path: '.env.local' });
 const express = require('express');
-const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const userRoutes = require("./routes/user.js");
 const bookRoutes = require("./routes/book.js");
 const path = require('path');
+const connectToDatabase = require('./helpers/database');
+const morgan = require('morgan');
 
 const app = express();
 
-const MONGODB_URI = process.env.NODE_ENV === 'production' ? process.env.MONGODB_ATLAS_URI : process.env.NODE_ENV === 'development' ? process.env.MONGODB_LOCAL_URI : undefined;
-const dbName = process.env.NODE_ENV === 'production' ? 'Atlas' : process.env.NODE_ENV === 'development' ? 'Local' : undefined;
+connectToDatabase();
 
-if (!MONGODB_URI || !dbName) {
-  throw new Error('Invalid NODE_ENV! Set it to either "production" or "development".');
-}
-
-mongoose.connect(MONGODB_URI)
-  .then(() => console.log(`Connexion à MongoDB ${dbName} réussie !`))
-  .catch(() => console.log(`Connexion à MongoDB ${dbName} échouée !`));
+app.use(morgan('dev'));
 
 app.use(express.json());
 
