@@ -1,5 +1,5 @@
 const Book = require("../models/Book.js");
-const fs = require("fs");
+const { updateBook, deleteImage } = require("./bookService.js");
 
 exports.getAllBooks = (req, res, next) => {
     Book.find()
@@ -77,26 +77,13 @@ exports.modifyBook = (req, res, next) => {
     Book.findOne({ _id: req.params.id })
         .then((book) => {
             if (book.userId != req.auth.userId) {
-                res.status(403).json(error);
+                return res.status(403).json(error);
+            } 
+            const update = () => updateBook(req.params.id, bookObject, res);
+            if (req.file) {
+                deleteImage(book.imageUrl, update);
             } else {
-                if (req.file) {
-                    const filename = book.imageUrl.split('/images/')[1];
-                    fs.unlink(`images/${filename}`, () => {
-                        Book.updateOne(
-                            { _id: req.params.id },
-                            { ...bookObject, _id: req.params.id }
-                        )
-                            .then(() => res.status(200).json({ message: "Le livre a bien été modifié !" }))
-                            .catch((error) => res.status(500).json(error));
-                    });
-                } else {
-                    Book.updateOne(
-                        { _id: req.params.id },
-                        { ...bookObject, _id: req.params.id }
-                    )
-                        .then(() => res.status(200).json({ message: "Le livre a bien été modifié !" }))
-                        .catch((error) => res.status(500).json(error));
-                }
+                update();
             }
         })
         .catch((error) => {
@@ -105,22 +92,29 @@ exports.modifyBook = (req, res, next) => {
 };
 
 exports.deleteBook = (req, res, next) => {
+    console.log("deleteBook called with id:", req.params.id);
     Book.findOne({ _id: req.params.id })
         .then((book) => {
+            console.log("Book found:", book);
             if (book.userId != req.auth.userId) {
-                res.status(403).json(error);
-            } else {
-                const filename = book.imageUrl.split("/images/")[1];
-                fs.unlink(`images/${filename}`, () => {
-                    Book.deleteOne({ _id: req.params.id })
-                        .then(() => {
-                            res.status(200).json({ message: "Le livre a bien été supprimé !" });
-                        })
-                        .catch((error) => res.status(401).json(error));
-                });
+                console.log("Unauthorized user");
+                return res.status(403).json(error);
             }
+            deleteImage(book.imageUrl, () => {
+                console.log("Image deleted, now deleting book");
+                Book.deleteOne({ _id: req.params.id })
+                    .then(() => {
+                        console.log("Book deleted successfully");
+                        res.status(200).json({ message: "Le livre a bien été supprimé !" });
+                    })
+                    .catch((error) => {
+                        console.log("Error deleting book:", error);
+                        res.status(401).json(error);
+                    });
+            });
         })
         .catch((error) => {
+            console.log("Error finding book:", error);
             res.status(500).json(error);
         });
 };

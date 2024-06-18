@@ -23,6 +23,8 @@ Go to backend folder and create an env file containing those lines :
 <br>
 `MONGODB_LOCAL_URI= Your local MongoDB URI`
 <br>
+`JWT_SECRET= Generate your own secret token's key`
+<br>
 Then run in the console : 
 <br>
 `npm install` to install dependencies
