@@ -19,11 +19,21 @@ Go to backend folder and create an env file containing those lines :
 <br>
 `NODE_ENV= either "production" (for ATLAS) or "development" (for local)`
 <br>
-`MONGODB_ATLAS_URI= Your MongoDB Atlas DB URI`
+ 
+<br>
+`ATLAS_DB_USERNAME= ...`
+<br>
+`ATLAS_DB_PASSWORD= ...`
+<br>
+`ATLAS_DB_CLUSTER= ...`
+<br>
+`ATLAS_DB_NAME= ...`
+<br>
+ 
 <br>
 `MONGODB_LOCAL_URI= Your local MongoDB URI`
 <br>
-`JWT_SECRET= Generate your own secret token's key`
+`JWT_SECRET= Generate your own secret token's key for authentification middleware.`
 <br>
 Then run in the console : 
 <br>

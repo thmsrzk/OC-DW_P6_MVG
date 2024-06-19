@@ -3,8 +3,12 @@ require('dotenv').config({ path: '.env.local' });
 const mongoose = require('mongoose');
 
 function connectToDatabase() {
-    const MONGODB_URI = process.env.NODE_ENV === 'production' ? process.env.MONGODB_ATLAS_URI : process.env.NODE_ENV === 'development' ? process.env.MONGODB_LOCAL_URI : undefined;
-    const dbName = process.env.NODE_ENV === 'production' ? 'Atlas' : process.env.NODE_ENV === 'development' ? 'Local' : undefined;
+    const env = process.env.NODE_ENV;
+    const localURI = process.env.MONGODB_LOCAL_URI;
+    const atlasURI = `mongodb+srv://${process.env.ATLAS_DB_USERNAME}:${process.env.ATLAS_DB_PASSWORD}@${process.env.ATLAS_DB_CLUSTER}/${process.env.ATLAS_DB_NAME}?retryWrites=true&w=majority`;
+
+    const MONGODB_URI = env === 'production' ? atlasURI : env === 'development' ? localURI : undefined;
+    const dbName = env === 'production' ? 'Atlas' : env === 'development' ? 'Local' : undefined;
 
     if (!MONGODB_URI || !dbName) {
         throw new Error('Invalid NODE_ENV! Set it to either "production" or "development".');

@@ -92,29 +92,22 @@ exports.modifyBook = (req, res, next) => {
 };
 
 exports.deleteBook = (req, res, next) => {
-    console.log("deleteBook called with id:", req.params.id);
     Book.findOne({ _id: req.params.id })
         .then((book) => {
-            console.log("Book found:", book);
             if (book.userId != req.auth.userId) {
-                console.log("Unauthorized user");
                 return res.status(403).json(error);
             }
             deleteImage(book.imageUrl, () => {
-                console.log("Image deleted, now deleting book");
                 Book.deleteOne({ _id: req.params.id })
                     .then(() => {
-                        console.log("Book deleted successfully");
                         res.status(200).json({ message: "Le livre a bien été supprimé !" });
                     })
                     .catch((error) => {
-                        console.log("Error deleting book:", error);
                         res.status(401).json(error);
                     });
             });
         })
         .catch((error) => {
-            console.log("Error finding book:", error);
             res.status(500).json(error);
         });
 };
