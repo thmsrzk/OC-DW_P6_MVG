@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const userRoutes = require("./routes/user.js");
 const bookRoutes = require("./routes/book.js");
 const path = require('path');
-const connectToDatabase = require('./helpers/database');
+const connectToDatabase = require('./config/database.js');
 const morgan = require('morgan');
 
 const app = express();
