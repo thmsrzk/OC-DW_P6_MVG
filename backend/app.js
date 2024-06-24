@@ -1,5 +1,4 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const userRoutes = require("./routes/user.js");
 const bookRoutes = require("./routes/book.js");
 const path = require('path');
@@ -20,8 +19,6 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   next();
 });
-
-app.use(bodyParser.json());
 
 app.use('/api/auth', userRoutes);
 app.use('/api/books', bookRoutes);
